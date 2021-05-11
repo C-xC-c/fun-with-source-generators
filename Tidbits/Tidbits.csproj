@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <!--
+    To turn our generator into a nuget package, we need to stop msbuild from putting our
+    dll in /lib, and and instead put it in /analyzers/dotnet/cs ourselves.
+  -->
+  <PropertyGroup>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <None Include="$(OutputPath)/$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  </ItemGroup>
+
+  <!-- 
+    Similarly, if our generator depends on a NuGet package at compile time but not run time,
+    we tell msbuild not to include a public reference to the package, and place it in the correct
+    directory ourselves.
+  -->
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" PrivateAssets="all" GeneratePathProperty="true" />
+    <None Include="$(PkgNewtonsoft_Json)/lib/netstandard2.0/*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  </ItemGroup>
+
+  <!--
+    To automatically add <Analzyer>s to .Net Framework projects, we need to include
+    install.ps1 and uninstall.ps1 to the tools directory of the .nupkg file. These use
+    Powershell's baked in support for project files to add and remove analyzers.
+    
+    The files included are taken from https://github.com/dotnet/roslyn-analyzers,
+    and licensed under the Apache License 2.0.
+  -->
+  <ItemGroup>
+    <None Include="Tools/*" Pack="true" PackagePath="tools" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0" />
+  </ItemGroup>
+
+</Project>
