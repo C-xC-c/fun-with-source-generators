@@ -1,2 +1,2 @@
-* Magic with Source Generators
-See my blob post (coming soon tm)
+* fun with Source Generators
+Source code from my blogpost [[https://tyrer.dev/words/fun-with-source-generators.html][here]].
